@@ -1,0 +1,66 @@
+﻿<Window x:Class="TransportQuest.Views.Panels.FirmsPanel"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:TransportQuest.Views.Panels"
+        mc:Ignorable="d"
+        Title="Добавить фирму" Height="476" Width="383"
+         WindowStartupLocation="CenterScreen" WindowStyle="ToolWindow">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition/>
+            <RowDefinition Height="80px" />
+            <RowDefinition Height="200*"/>
+            <RowDefinition Height="200*"/>
+            <RowDefinition Height="200*"/>
+            <RowDefinition Height="100*"/>
+            <RowDefinition />
+        </Grid.RowDefinitions>
+        <Label Content="Фирма"
+               FontSize="36"
+               Grid.Row="1"
+               HorizontalAlignment="Center"
+               />
+        <Label Content="Название"
+            FontSize="20"
+            Grid.Row="2"
+            HorizontalAlignment="Center"
+            VerticalAlignment="Top"/>
+
+        <TextBox x:Name="FirmName"
+            Grid.Row="2"
+            Width="200" Height="30"
+            HorizontalAlignment="Center"/>
+
+        <Label Content="Координаты"
+            FontSize="20"
+            Grid.Row="3"
+            HorizontalAlignment="Center"
+            VerticalAlignment="Top"/>
+        <TextBox x:Name="FirmCoord"
+            Grid.Row="3"
+            Width="200" Height="30"
+            HorizontalAlignment="Center"/>
+
+
+        <Label Content="Показатели"
+            FontSize="20"
+            Grid.Row="4"
+            HorizontalAlignment="Center"
+                VerticalAlignment="Top"/>
+        <TextBox x:Name="FirmValues"
+            Grid.Row="4"
+            Width="200" Height="30"
+            HorizontalAlignment="Center"/>
+
+        <Button Content="Добавить"
+            Height="30" Width="100"
+            Grid.Row="5" Margin="200,10,40,10" Click="Add_Click"/>
+
+        <Button Content="Отмена"
+            Height="30" Width="100"
+            Grid.Row="5" Margin="40,10,200,10" Click="Close_Click"/>
+
+    </Grid>
+</Window>
