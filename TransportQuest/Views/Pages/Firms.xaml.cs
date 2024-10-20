@@ -5,7 +5,9 @@ using TransportQuest.Views.Panels;
 using ClosedXML.Excel;
 using Microsoft.Win32;
 using System;
-using TransportQuest;
+using TransportQuest.Models;
+using TransportQuest.Services;
+using System.Collections.Generic;
 
 namespace TransportQuest.Views.Pages
 {
@@ -15,19 +17,35 @@ namespace TransportQuest.Views.Pages
     /// </summary>
     public partial class Firms : Page
     {
-        public Firms()
+        private List<Firm> _firmsList;
+        public Firms(List<Firm> firmsList)
         {
             InitializeComponent();
+            _firmsList= firmsList;
         }
 
         private void AddItem_Click(object sender, RoutedEventArgs e)
         {
             var openPanel = new FirmsPanel();
             openPanel.ShowDialog();
-            AddFirmItem(openPanel.FirmName.Text, openPanel.FirmCoord.Text, openPanel.FirmParam1.Text, openPanel.FirmParam2.Text, openPanel.FirmParam3.Text);
+            if (openPanel.accept)
+            {
+                Firm newFirm = new Firm()
+                {
+                    Name = openPanel.FirmName.Text,
+                    Coord = openPanel.FirmCoord.Text,
+                    Param1 = openPanel.FirmParam1.Text,
+                    Param2 = openPanel.FirmParam2.Text,
+                    Param3 = openPanel.FirmParam3.Text
+                };
+
+                AddFirmItem(newFirm);
+
+            }
         }
 
-        private void AddFirmItem(string FirmName, string FirmCoord, string FirmParam1, string FirmParam2, string FirmParam3) {
+        // Метод для создания новой фирмы
+        private void AddFirmItem(Firm Firm) {
             // Создаем контейнер Grid
             Grid grid = new Grid
             {
@@ -47,7 +65,7 @@ namespace TransportQuest.Views.Pages
             {
                 FontSize = 17,
                 Foreground = Brushes.White,
-                Text = FirmName + "\n" + FirmCoord + "\n" + FirmParam1 + "\n" + FirmParam2 + "\n" + FirmParam3,
+                Text = Firm.Name + "\n" + Firm.Coord + "\n" + Firm.Param1 + "\n" + Firm.Param2 + "\n" + Firm.Param3,
                 HorizontalAlignment = HorizontalAlignment.Center,
                 VerticalAlignment = VerticalAlignment.Center
 
@@ -57,15 +75,19 @@ namespace TransportQuest.Views.Pages
 
             // Пункт "Редактировать"
             MenuItem editItem = new MenuItem { Header = "Редактировать" };
-            editItem.Click += (s, args) => EditFirm(FirmName);
+            editItem.Click += (s, args) => EditFirm(Firm, grid);
 
             // Пункт "Удалить"
             MenuItem deleteItem = new MenuItem { Header = "Удалить" };
-            deleteItem.Click += (s, args) => DeleteFirm(grid, FirmName, FirmCoord); // Удаляем сам Grid
+            deleteItem.Click += (s, args) => DeleteFirm(grid, Firm.Name, Firm.Coord); // Удаляем сам Grid
+
+            MenuItem traceMarshrut = new MenuItem { Header = "Рассчитать маршрут" };
+            traceMarshrut.Click += (s, args) => TraceMarshrut(Firm, _firmsList); 
 
             // Добавляем пункты в контекстное меню
             contextMenu.Items.Add(editItem);
             contextMenu.Items.Add(deleteItem);
+            contextMenu.Items.Add(traceMarshrut);
 
             // Привязываем контекстное меню к TextBlock
             textBlock.ContextMenu = contextMenu;
@@ -77,13 +99,42 @@ namespace TransportQuest.Views.Pages
             // Добавляем заголовок в контейнер Grid
             grid.Children.Add(border);
             wrapPanel.Children.Add(grid);
+            _firmsList.Add(Firm);
         }
 
         // Метод для редактирования фирмы
-        private void EditFirm(string firmName)
+        private void EditFirm(Firm firm, Grid grid)
         {
-            MessageBox.Show($"Редактировать фирму: {firmName}");
-            // Здесь можно открыть панель редактирования или внести изменения
+            // Открываем панель редактирования
+            var firmsPanel = new FirmsPanel
+            {
+                FirmName = { Text = firm.Name },
+                FirmCoord = { Text = firm.Coord },
+                FirmParam1 = { Text = firm.Param1 },
+                FirmParam2 = { Text = firm.Param2 },
+                FirmParam3 = { Text = firm.Param3 }
+            };
+
+            firmsPanel.ShowDialog();
+
+            // Если изменения были приняты
+            if (firmsPanel.accept)
+            {
+                // Обновляем данные фирмы
+                firm.Name = firmsPanel.FirmName.Text;
+                firm.Coord = firmsPanel.FirmCoord.Text;
+                firm.Param1 = firmsPanel.FirmParam1.Text;
+                firm.Param2 = firmsPanel.FirmParam2.Text;
+                firm.Param3 = firmsPanel.FirmParam3.Text;
+
+                // Обновляем текст в TextBlock
+                var textBlock = grid.Children[0] as Border;
+                if (textBlock != null && textBlock.Child is TextBlock)
+                {
+                    var tb = (TextBlock)textBlock.Child;
+                    tb.Text = firmsPanel.FirmName.Text + "\n" + firmsPanel.FirmCoord.Text + "\n" + firmsPanel.FirmParam1.Text + "\n" + firmsPanel.FirmParam2.Text + "\n" + firmsPanel.FirmParam3.Text;
+                }
+            }
         }
 
         // Метод для удаления фирмы
@@ -127,14 +178,16 @@ namespace TransportQuest.Views.Pages
                     // Цикл по строкам, пока строка не пустая
                     while (!worksheet.Row(currentRow).IsEmpty())
                     {
-                        // Читаем значение из ячейки A текущей строки
-                        var cellValue1 = worksheet.Cell(currentRow, 1).GetValue<string>();
-                        var cellValue2 = worksheet.Cell(currentRow, 6).GetValue<string>();
-                        var cellValue3 = worksheet.Cell(currentRow, 2).GetValue<string>();
-                        var cellValue4 = worksheet.Cell(currentRow, 3).GetValue<string>();
-                        var cellValue5 = worksheet.Cell(currentRow, 5).GetValue<string>();
+                        Firm newFirm = new Firm()
+                        {
+                            Name = worksheet.Cell(currentRow, 1).GetValue<string>(),
+                            Coord = worksheet.Cell(currentRow, 6).GetValue<string>(),
+                            Param1 = worksheet.Cell(currentRow, 2).GetValue<string>(),
+                            Param2 = worksheet.Cell(currentRow, 3).GetValue<string>(),
+                            Param3 = worksheet.Cell(currentRow, 5).GetValue<string>()
+                        };
 
-                        AddFirmItem(cellValue1, cellValue2, cellValue3, cellValue4, cellValue5);
+                        AddFirmItem(newFirm);
 
                         // Логика обработки строки
 
@@ -146,6 +199,16 @@ namespace TransportQuest.Views.Pages
             {
                 MessageBox.Show($"Ошибка при работе с файлом Excel: {ex.Message}");
             }
+        }
+
+        //Метод для расчета маршрута
+        private void TraceMarshrut(Firm selectedFirm, List<Firm> firmsList)
+        {
+            var openPanel1 = new TraceMarshrutPanel();
+            // Передаем список фирм в панель
+            openPanel1.LoadFirms(firmsList, selectedFirm);
+
+            openPanel1.ShowDialog();
         }
     }
 }

@@ -2,7 +2,8 @@
 using System.Windows;
 using System.Windows.Controls;
 using TransportQuest.Views.Pages;
-
+using TransportQuest.Models;
+using System.Linq;
 
 namespace TransportQuest
 {
@@ -19,7 +20,7 @@ namespace TransportQuest
         public MainWindow()
         {
             InitializeComponent();
-            pageFirms = new Firms();
+            pageFirms = new Firms(FirmsList);
             pageCars = new Cars();
             pageWays = new Ways();
             pageSettings = new Settings();
@@ -35,16 +36,9 @@ namespace TransportQuest
                 case "FirmsBtn": MainFrame.NavigationService.Navigate(pageFirms); break;
                 case "CarsBtn": MainFrame.NavigationService.Navigate(pageCars); break;
                 case "WaysBtn": MainFrame.NavigationService.Navigate(pageWays); break;
-                case "SettingsBtn": MainFrame.NavigationService.Navigate(pageSettings); break;
+                case "SettingsBtn":MessageBox.Show(FirmsList.Count.ToString()); break; //MainFrame.NavigationService.Navigate(pageSettings); break;
             }
         }
     }
-    public class Firm
-    {
-        public string Name { get; set; }
-        public string Coord { get; set; }
-        public string Param1 { get; set; }
-        public string Param2 { get; set; }
-        public string Param3 { get; set; }
-    }
+
 }

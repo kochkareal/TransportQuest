@@ -88,6 +88,9 @@
       <Private>True</Private>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.13.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
     <Reference Include="RBush, Version=3.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\RBush.3.2.0\lib\netstandard1.2\RBush.dll</HintPath>
     </Reference>
@@ -254,6 +257,9 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Models\Car.cs" />
+    <Compile Include="Models\Firm.cs" />
+    <Compile Include="Services\TraceMarshrutService.cs" />
     <Compile Include="Views\Pages\Cars.xaml.cs">
       <DependentUpon>Cars.xaml</DependentUpon>
     </Compile>
@@ -266,8 +272,14 @@
     <Compile Include="Views\Pages\Ways.xaml.cs">
       <DependentUpon>Ways.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\Panels\CarsPanel.xaml.cs">
+      <DependentUpon>CarsPanel.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\Panels\FirmsPanel.xaml.cs">
       <DependentUpon>FirmsPanel.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Panels\TraceMarshrutPanel.xaml.cs">
+      <DependentUpon>TraceMarshrutPanel.xaml</DependentUpon>
     </Compile>
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
@@ -297,7 +309,15 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Views\Panels\CarsPanel.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Views\Panels\FirmsPanel.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\Panels\TraceMarshrutPanel.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
