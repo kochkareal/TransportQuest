@@ -28,15 +28,25 @@
             Grid.Row="1">
             <WrapPanel x:Name="wrapPanel" Background="LightCyan"/>
         </ScrollViewer>
-        
+
         <Button x:Name="AddItem"
             Content="Добавить"
-            Grid.Row="3"
+            Grid.Row="2"
             Click="AddItem_Click"
             FontSize="20"
-            Height="47"
+            Height="48"
             VerticalAlignment="Center"
-            HorizontalAlignment="Center"
-            Width="200" />
+            HorizontalAlignment="Right"
+            Width="200" Margin="0,0,10,0"/>
+
+        <Button x:Name="Import"
+            Content="Импорт"
+            Grid.Row="2"
+            Click="Import_Click"
+            FontSize="20"
+            Height="50"
+            VerticalAlignment="Center"
+            HorizontalAlignment="Left"
+            Width="200" Margin="10,0,0,0"/>
     </Grid>
 </Page>
