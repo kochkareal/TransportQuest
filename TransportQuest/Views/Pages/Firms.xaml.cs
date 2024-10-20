@@ -2,6 +2,10 @@
 using System.Windows.Controls;
 using System.Windows.Media;
 using TransportQuest.Views.Panels;
+using ClosedXML.Excel;
+using Microsoft.Win32;
+using System;
+using TransportQuest;
 
 namespace TransportQuest.Views.Pages
 {
@@ -20,7 +24,10 @@ namespace TransportQuest.Views.Pages
         {
             var openPanel = new FirmsPanel();
             openPanel.ShowDialog();
-                
+            AddFirmItem(openPanel.FirmName.Text, openPanel.FirmCoord.Text, openPanel.FirmParam1.Text, openPanel.FirmParam2.Text, openPanel.FirmParam3.Text);
+        }
+
+        private void AddFirmItem(string FirmName, string FirmCoord, string FirmParam1, string FirmParam2, string FirmParam3) {
             // Создаем контейнер Grid
             Grid grid = new Grid
             {
@@ -40,7 +47,7 @@ namespace TransportQuest.Views.Pages
             {
                 FontSize = 17,
                 Foreground = Brushes.White,
-                Text = openPanel.FirmName.Text + "\n" + openPanel.FirmCoord.Text + "\n" + openPanel.FirmParam1.Text + "\n" + openPanel.FirmParam2.Text + "\n" + openPanel.FirmParam3.Text,
+                Text = FirmName + "\n" + FirmCoord + "\n" + FirmParam1 + "\n" + FirmParam2 + "\n" + FirmParam3,
                 HorizontalAlignment = HorizontalAlignment.Center,
                 VerticalAlignment = VerticalAlignment.Center
 
@@ -50,11 +57,11 @@ namespace TransportQuest.Views.Pages
 
             // Пункт "Редактировать"
             MenuItem editItem = new MenuItem { Header = "Редактировать" };
-            editItem.Click += (s, args) => EditFirm(openPanel.FirmName.Text);
+            editItem.Click += (s, args) => EditFirm(FirmName);
 
             // Пункт "Удалить"
             MenuItem deleteItem = new MenuItem { Header = "Удалить" };
-            deleteItem.Click += (s, args) => DeleteFirm(grid, openPanel.FirmName.Text); // Удаляем сам Grid
+            deleteItem.Click += (s, args) => DeleteFirm(grid, FirmName, FirmCoord); // Удаляем сам Grid
 
             // Добавляем пункты в контекстное меню
             contextMenu.Items.Add(editItem);
@@ -80,7 +87,7 @@ namespace TransportQuest.Views.Pages
         }
 
         // Метод для удаления фирмы
-        private void DeleteFirm(Grid grid, string firmName)
+        private void DeleteFirm(Grid grid, string firmName, string firmCoord)
         {
             wrapPanel.Children.Remove(grid); // Удаляем Grid из WrapPanel
             MessageBox.Show($"Фирма {firmName} удалена.");
@@ -88,7 +95,58 @@ namespace TransportQuest.Views.Pages
 
         private void Import_Click(object sender, RoutedEventArgs e)
         {
+            // Открытие диалога выбора файла
+            OpenFileDialog openFileDialog = new OpenFileDialog
+            {
+                Filter = "Excel Files|*.xlsx;*.xlsm" // Фильтр для Excel файлов
+            };
 
+            // Если пользователь выбрал файл и нажал ОК
+            if (openFileDialog.ShowDialog() == true)
+            {
+                string filePath = openFileDialog.FileName;
+
+                // Открываем и читаем Excel файл
+                ReadExcelFile(filePath);
+            }
+        }
+
+        // Метод для работы с Excel файлом (чтение и работа с ячейками)
+        private void ReadExcelFile(string filePath)
+        {
+            try
+            {
+                // Открываем Excel файл
+                using (var workbook = new XLWorkbook(filePath))
+                {
+                    // Открываем первый лист (или любой другой по индексу или имени)
+                    var worksheet = workbook.Worksheet(1); // Лист с индексом 1
+
+                    int currentRow = 2; // Номер текущей строки для проверки
+
+                    // Цикл по строкам, пока строка не пустая
+                    while (!worksheet.Row(currentRow).IsEmpty())
+                    {
+                        // Читаем значение из ячейки A текущей строки
+                        var cellValue1 = worksheet.Cell(currentRow, 1).GetValue<string>();
+                        var cellValue2 = worksheet.Cell(currentRow, 6).GetValue<string>();
+                        var cellValue3 = worksheet.Cell(currentRow, 2).GetValue<string>();
+                        var cellValue4 = worksheet.Cell(currentRow, 3).GetValue<string>();
+                        var cellValue5 = worksheet.Cell(currentRow, 5).GetValue<string>();
+
+                        AddFirmItem(cellValue1, cellValue2, cellValue3, cellValue4, cellValue5);
+
+                        // Логика обработки строки
+
+                        currentRow++; // Переход на следующую строку
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Ошибка при работе с файлом Excel: {ex.Message}");
+            }
         }
     }
 }
+

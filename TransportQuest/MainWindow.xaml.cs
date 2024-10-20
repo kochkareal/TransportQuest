@@ -1,4 +1,5 @@
-﻿using System.Windows;
+﻿using System.Collections.Generic;
+using System.Windows;
 using System.Windows.Controls;
 using TransportQuest.Views.Pages;
 
@@ -10,10 +11,11 @@ namespace TransportQuest
     /// </summary>
     public partial class MainWindow : Window
     {
-        Page pageFirms;
-        Page pageCars;
-        Page pageWays;
-        Page pageSettings;
+        private Page pageFirms;
+        private Page pageCars;
+        private Page pageWays;
+        private Page pageSettings;
+        List<Firm> FirmsList = new List<Firm>();
         public MainWindow()
         {
             InitializeComponent();
@@ -23,20 +25,26 @@ namespace TransportQuest
             pageSettings = new Settings();
             MainFrame.Content = pageFirms;
         }
-
-        private void  ChangePage_Click(object sender, RoutedEventArgs e)
+        private void ChangePage_Click(object sender, RoutedEventArgs e)
 
         {
             var button = sender as Button;
             var buttonName = button.Name.ToString();
             switch (buttonName)
             {
-                case "Firms": MainFrame.NavigationService.Navigate(pageFirms); break;
-                case "Cars": MainFrame.NavigationService.Navigate(pageCars); break;
-                case "Ways": MainFrame.NavigationService.Navigate(pageWays); break;
-                case "Settings": MainFrame.NavigationService.Navigate(pageSettings); break;
+                case "FirmsBtn": MainFrame.NavigationService.Navigate(pageFirms); break;
+                case "CarsBtn": MainFrame.NavigationService.Navigate(pageCars); break;
+                case "WaysBtn": MainFrame.NavigationService.Navigate(pageWays); break;
+                case "SettingsBtn": MainFrame.NavigationService.Navigate(pageSettings); break;
             }
-
         }
+    }
+    public class Firm
+    {
+        public string Name { get; set; }
+        public string Coord { get; set; }
+        public string Param1 { get; set; }
+        public string Param2 { get; set; }
+        public string Param3 { get; set; }
     }
 }
